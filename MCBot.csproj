@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{49033E2D-CEA5-4C39-B89D-E84BF5207C00}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MCBot</RootNamespace>
+    <AssemblyName>MCBot</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Generic\BinaryReaderNetworkExtension.cs" />
+    <Compile Include="Generic\BinaryWriterNetworkExtension.cs" />
+    <Compile Include="Generic\Compression.cs" />
+    <Compile Include="Generic\Point3D.cs" />
+    <Compile Include="Generic\Vector3D.cs" />
+    <Compile Include="MCBot\Events\AddInventoryEvent.cs" />
+    <Compile Include="MCBot\Events\AddVehicleEvent.cs" />
+    <Compile Include="MCBot\Events\ArmAnimationEvent.cs" />
+    <Compile Include="MCBot\Events\BlockChangeEvent.cs" />
+    <Compile Include="MCBot\Events\ChatEvent.cs" />
+    <Compile Include="MCBot\Events\CollectItemEvent.cs" />
+    <Compile Include="MCBot\Events\ComplexEntitiesEvent.cs" />
+    <Compile Include="MCBot\Events\DestroyEntityEvent.cs" />
+    <Compile Include="MCBot\Events\DisconnectEvent.cs" />
+    <Compile Include="MCBot\Events\EntityEvent.cs" />
+    <Compile Include="MCBot\Events\EntityLookEvent.cs" />
+    <Compile Include="MCBot\Events\EntityTeleportEvent.cs" />
+    <Compile Include="MCBot\Events\HandshakeEvent.cs" />
+    <Compile Include="MCBot\Events\HeartbeatEvent.cs" />
+    <Compile Include="MCBot\Events\HoldSwitchEvent.cs" />
+    <Compile Include="MCBot\Events\ItemSpawnEvent.cs" />
+    <Compile Include="MCBot\Events\LoginEvent.cs" />
+    <Compile Include="MCBot\Events\MapChunkEvent.cs" />
+    <Compile Include="MCBot\Events\MobSpawnEvent.cs" />
+    <Compile Include="MCBot\Events\MultiBlockChangeEvent.cs" />
+    <Compile Include="MCBot\Events\NamedEntitySpawnEvent.cs" />
+    <Compile Include="MCBot\Events\PacketRecieveEvent.cs" />
+    <Compile Include="MCBot\Events\PlayerInventoryEvent.cs" />
+    <Compile Include="MCBot\Events\PlayerMoveLookEvent.cs" />
+    <Compile Include="MCBot\Events\PreChunkEvent.cs" />
+    <Compile Include="MCBot\Events\RelativeEntityMoveEvent.cs" />
+    <Compile Include="MCBot\Events\RelativeEntityMoveLookEvent.cs" />
+    <Compile Include="MCBot\Events\SpawnPositionEvent.cs" />
+    <Compile Include="MCBot\Events\UnknownPacketEvent.cs" />
+    <Compile Include="MCBot\Events\UpdateTimeEvent.cs" />
+    <Compile Include="MCBot\MCAccountInfo.cs" />
+    <Compile Include="MCBot\MCBlock.cs" />
+    <Compile Include="MCBot\MCBlockFace.cs" />
+    <Compile Include="MCBot\MCBlockTransform.cs" />
+    <Compile Include="MCBot\MCBlockType.cs" />
+    <Compile Include="MCBot\MCClient.cs" />
+    <Compile Include="MCBot\MCColour.cs" />
+    <Compile Include="MCBot\MCDigState.cs" />
+    <Compile Include="MCBot\MCInventoryType.cs" />
+    <Compile Include="MCBot\MCItem.cs" />
+    <Compile Include="MCBot\MCLogin.cs" />
+    <Compile Include="MCBot\MCPacketOpcodes.cs" />
+    <Compile Include="MCBot\MCPackets.cs" />
+    <Compile Include="MCBot\MCRawClient.cs" />
+    <Compile Include="MCBot\MCSocket.cs" />
+    <Compile Include="MCBot\MCVehicleType.cs" />
+    <Compile Include="MCBot\NBT\INamedBinaryTag.cs" />
+    <Compile Include="MCBot\NBT\NBTStructure.cs" />
+    <Compile Include="MCBot\NBT\NBT_Byte.cs" />
+    <Compile Include="MCBot\NBT\NBT_ByteArray.cs" />
+    <Compile Include="MCBot\NBT\NBT_Compound.cs" />
+    <Compile Include="MCBot\NBT\NBT_Double.cs" />
+    <Compile Include="MCBot\NBT\NBT_End.cs" />
+    <Compile Include="MCBot\NBT\NBT_Float.cs" />
+    <Compile Include="MCBot\NBT\NBT_Int.cs" />
+    <Compile Include="MCBot\NBT\NBT_List.cs" />
+    <Compile Include="MCBot\NBT\NBT_Long.cs" />
+    <Compile Include="MCBot\NBT\NBT_Short.cs" />
+    <Compile Include="MCBot\NBT\NBT_String.cs" />
+    <Compile Include="MCBot\NBT\NBT_Type.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
