@@ -22,7 +22,7 @@ namespace Org.Jonyleeson.MCBot
         public byte Pitch
         { get; private set; }
 
-        public short Item
+        public MCBlockType Item
         { get; private set; }
 
         public NamedEntitySpawnEventArgs(int id, string name, int x, int y, int z, byte yaw, byte pitch, short item)
@@ -33,7 +33,7 @@ namespace Org.Jonyleeson.MCBot
             Position = new Point3D(x / 32f, y / 32f, z / 32f);
             Yaw = yaw;
             Pitch = pitch;
-            Item = item;
+            Item = (MCBlockType)item;
         }
     }
 }

@@ -1,0 +1,5 @@
+MCBOT - A BOT LIBRARY FOR MINECRAFT ALPHA
+
+Main namespace: Org.Jonyleeson.MCBot
+
+Usage: Create a new instance of the MCClient class and then add handlers for several of the events. Act accordingly.

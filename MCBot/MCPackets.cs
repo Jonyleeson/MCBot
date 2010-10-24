@@ -265,15 +265,35 @@ namespace Org.Jonyleeson.MCBot
             return buffer;
         }
 
-        public static byte[] CreatePlayerHoldingPacket(short item)
+        public static byte[] CreatePlayerHoldingPacket(int id, short item)
         {
             byte[] buffer;
 
             BinaryWriter writer = new BinaryWriter(new MemoryStream());
 
             writer.Write((byte)MCPacketOpcodes.HoldSwitch);
-            writer.Write((int)0);
+            writer.WriteNetwork(id);
             writer.WriteNetwork(item);
+
+            buffer = new byte[writer.BaseStream.Position];
+
+            writer.BaseStream.Position = 0;
+            writer.BaseStream.Read(buffer, 0, buffer.Length);
+            writer.Close();
+            writer.Dispose();
+
+            return buffer;
+        }
+
+        public static byte[] CreateArmAnimationPacket(int id, bool animate)
+        {
+            byte[] buffer;
+
+            BinaryWriter writer = new BinaryWriter(new MemoryStream());
+
+            writer.Write((byte)MCPacketOpcodes.ArmAnimation);
+            writer.WriteNetwork(id);
+            writer.Write(animate);
 
             buffer = new byte[writer.BaseStream.Position];
 

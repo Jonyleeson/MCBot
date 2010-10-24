@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Org.Jonyleeson.Generic;
 
 namespace Org.Jonyleeson.MCBot
 {
-    sealed class MCClient : MCRawClient
+    public sealed class MCClient : MCRawClient
     {
         #region Members
         private string m_Username;
@@ -13,12 +14,12 @@ namespace Org.Jonyleeson.MCBot
         private bool m_UseAuth;
         private MCAccountInfo m_AccountInfo;
         private Thread m_Heartbeat;
-
         private MCBlockType m_SelectedItem;
         private MCItem[] m_EquipInv;
         private MCItem[] m_CraftInv;
         private MCItem[] m_ItemInv;
         private Point3D m_Position;
+        private List<MCPlayer> m_Players;
         #endregion
 
         #region Properties
@@ -29,8 +30,10 @@ namespace Org.Jonyleeson.MCBot
                 return m_Username;
             }
         }
+
         public long Time
         { get; private set; }
+
         public MCBlockType SelectedItem
         {
             get
@@ -43,6 +46,7 @@ namespace Org.Jonyleeson.MCBot
                 ChangeHolding(m_SelectedItem);
             }
         }
+        
         public MCItem[] EquipInventory
         {
             get
@@ -58,6 +62,7 @@ namespace Org.Jonyleeson.MCBot
                 UpdateInventory(MCInventoryType.Equipment, m_EquipInv);
             }
         }
+        
         public MCItem[] CraftInventory
         {
             get
@@ -73,6 +78,7 @@ namespace Org.Jonyleeson.MCBot
                 UpdateInventory(MCInventoryType.Crafting, m_CraftInv);
             }
         }
+        
         public MCItem[] ItemInventory
         {
             get
@@ -88,6 +94,7 @@ namespace Org.Jonyleeson.MCBot
                 UpdateInventory(MCInventoryType.Items, m_ItemInv);
             }
         }
+        
         public Point3D Position
         {
             get
@@ -100,8 +107,17 @@ namespace Org.Jonyleeson.MCBot
                 Move(m_Position, m_Position.Y + 0.5, true);
             }
         }
+        
         public Point3D SpawnPoint
         { get; private set; }
+
+        public MCPlayer[] Players
+        {
+            get 
+            { 
+                return m_Players.ToArray(); 
+            }
+        }
         #endregion
 
         #region Constructors
@@ -142,6 +158,7 @@ namespace Org.Jonyleeson.MCBot
             m_ItemInv = null;
             m_CraftInv = null;
             m_EquipInv = null;
+            m_Players = new List<MCPlayer>();
             Time = 0;
             SpawnPoint = new Point3D();
 
@@ -153,6 +170,12 @@ namespace Org.Jonyleeson.MCBot
             base.OnAddInventory += new AddInventoryEventHandler(MCClient_OnAddInventory);
             base.OnPlayerInventory += new PlayerInventoryEventHandler(MCClient_OnPlayerInventory);
             base.OnSpawnPosition += new SpawnPositionEventHandler(MCClient_OnSpawnPosition);
+            base.OnNamedEntitySpawn += new NamedEntitySpawnEventHandler(MCClient_OnNamedEntitySpawn);
+        }
+
+        void MCClient_OnNamedEntitySpawn(object sender, NamedEntitySpawnEventArgs e)
+        {
+            m_Players.Add(new MCPlayer(e.ID, e.Position, e.Name, e.Yaw, e.Pitch, e.Item));
         }
 
         void MCClient_OnSpawnPosition(object sender, SpawnPositionEventArgs e)

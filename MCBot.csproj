@@ -83,11 +83,13 @@
     <Compile Include="MCBot\MCClient.cs" />
     <Compile Include="MCBot\MCColour.cs" />
     <Compile Include="MCBot\MCDigState.cs" />
+    <Compile Include="MCBot\MCEntity.cs" />
     <Compile Include="MCBot\MCInventoryType.cs" />
     <Compile Include="MCBot\MCItem.cs" />
     <Compile Include="MCBot\MCLogin.cs" />
     <Compile Include="MCBot\MCPacketOpcodes.cs" />
     <Compile Include="MCBot\MCPackets.cs" />
+    <Compile Include="MCBot\MCPlayer.cs" />
     <Compile Include="MCBot\MCRawClient.cs" />
     <Compile Include="MCBot\MCSocket.cs" />
     <Compile Include="MCBot\MCVehicleType.cs" />

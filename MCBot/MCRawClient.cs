@@ -8,7 +8,7 @@ using Org.Jonyleeson.MCBot.NBT;
 
 namespace Org.Jonyleeson.MCBot
 {
-    class MCRawClient
+    public class MCRawClient
     {
         private MCSocket m_Socket;
         private string m_Server;
@@ -684,7 +684,12 @@ namespace Org.Jonyleeson.MCBot
 
         public void ChangeHolding(MCBlockType item)
         {
-            SendPacket(MCPackets.CreatePlayerHoldingPacket((short)item));
+            SendPacket(MCPackets.CreatePlayerHoldingPacket(0, (short)item));
+        }
+
+        public void ArmAnimation(bool animate)
+        {
+            SendPacket(MCPackets.CreateArmAnimationPacket(0, animate));
         }
         #endregion
         #endregion
