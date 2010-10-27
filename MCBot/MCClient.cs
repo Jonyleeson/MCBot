@@ -5,21 +5,28 @@ using Org.Jonyleeson.Generic;
 
 namespace Org.Jonyleeson.MCBot
 {
-    public sealed class MCClient : MCRawClient
+    public sealed class MCClient
     {
         #region Members
+        private MCRawClient m_Client;
+
         private string m_Username;
         private string m_Password;
         private string m_ServerPassword;
         private bool m_UseAuth;
+        
         private MCAccountInfo m_AccountInfo;
+        
         private Thread m_Heartbeat;
+        
         private MCBlockType m_SelectedItem;
         private MCItem[] m_EquipInv;
         private MCItem[] m_CraftInv;
         private MCItem[] m_ItemInv;
         private Point3D m_Position;
         private List<MCPlayer> m_Players;
+        private float m_Yaw;
+        private float m_Pitch;
         #endregion
 
         #region Properties
@@ -30,10 +37,8 @@ namespace Org.Jonyleeson.MCBot
                 return m_Username;
             }
         }
-
         public long Time
         { get; private set; }
-
         public MCBlockType SelectedItem
         {
             get
@@ -46,7 +51,6 @@ namespace Org.Jonyleeson.MCBot
                 ChangeHolding(m_SelectedItem);
             }
         }
-        
         public MCItem[] EquipInventory
         {
             get
@@ -62,7 +66,6 @@ namespace Org.Jonyleeson.MCBot
                 UpdateInventory(MCInventoryType.Equipment, m_EquipInv);
             }
         }
-        
         public MCItem[] CraftInventory
         {
             get
@@ -78,7 +81,6 @@ namespace Org.Jonyleeson.MCBot
                 UpdateInventory(MCInventoryType.Crafting, m_CraftInv);
             }
         }
-        
         public MCItem[] ItemInventory
         {
             get
@@ -94,7 +96,6 @@ namespace Org.Jonyleeson.MCBot
                 UpdateInventory(MCInventoryType.Items, m_ItemInv);
             }
         }
-        
         public Point3D Position
         {
             get
@@ -107,15 +108,37 @@ namespace Org.Jonyleeson.MCBot
                 Move(m_Position, m_Position.Y + 0.5, true);
             }
         }
-        
         public Point3D SpawnPoint
         { get; private set; }
-
         public MCPlayer[] Players
         {
             get 
             { 
                 return m_Players.ToArray(); 
+            }
+        }
+        public float Yaw
+        {
+            get
+            {
+                return m_Yaw;
+            }
+            set
+            {
+                m_Yaw = value;
+                m_Client.Look(m_Yaw, m_Pitch, true);
+            }
+        }
+        public float Pitch
+        {
+            get
+            {
+                return m_Pitch;
+            }
+            set
+            {
+                m_Pitch = value;
+                m_Client.Look(m_Yaw, m_Pitch, true);
             }
         }
         #endregion
@@ -140,6 +163,8 @@ namespace Org.Jonyleeson.MCBot
         public MCClient(string server, int port, string username, string password, string serverpassword, bool useauth)
             : base(server, port)
         {
+            m_Client = new MCRawClient(server, port);
+
             m_Username = username;
             m_Password = password;
             m_ServerPassword = serverpassword;
@@ -161,29 +186,34 @@ namespace Org.Jonyleeson.MCBot
             m_Players = new List<MCPlayer>();
             Time = 0;
             SpawnPoint = new Point3D();
+            m_Yaw = 0f;
+            m_Pitch = 0f;
 
-            base.OnDisconnect += new DisconnectEventHandler(MCClient_OnDisconnect);
-            base.OnHandshake += new HandshakeEventHandler(MCClient_OnHandshake);
-            base.OnLogin += new LoginEventHandler(MCClient_OnLogin);
-            base.OnUpdateTime += new UpdateTimeEventHandler(MCClient_OnUpdateTime);
-            base.OnPlayerMoveLook += new PlayerMoveLookEventHandler(MCClient_OnPlayerMoveLook);
-            base.OnAddInventory += new AddInventoryEventHandler(MCClient_OnAddInventory);
-            base.OnPlayerInventory += new PlayerInventoryEventHandler(MCClient_OnPlayerInventory);
-            base.OnSpawnPosition += new SpawnPositionEventHandler(MCClient_OnSpawnPosition);
-            base.OnNamedEntitySpawn += new NamedEntitySpawnEventHandler(MCClient_OnNamedEntitySpawn);
+            m_Client.OnDisconnect += new DisconnectEventHandler(m_Client_OnDisconnect);
+            m_Client.OnHandshake += new HandshakeEventHandler(m_Client_OnHandshake);
+            m_Client.OnLogin += new LoginEventHandler(m_Client_OnLogin);
+            m_Client.OnUpdateTime += new UpdateTimeEventHandler(m_Client_OnUpdateTime);
+            m_Client.OnPlayerMoveLook += new PlayerMoveLookEventHandler(m_Client_OnPlayerMoveLook);
+            m_Client.OnAddInventory += new AddInventoryEventHandler(m_Client_OnAddInventory);
+            m_Client.OnPlayerInventory += new PlayerInventoryEventHandler(m_Client_OnPlayerInventory);
+            m_Client.OnSpawnPosition += new SpawnPositionEventHandler(m_Client_OnSpawnPosition);
+            m_Client.OnNamedEntitySpawn += new NamedEntitySpawnEventHandler(m_Client_OnNamedEntitySpawn);
         }
+        #endregion
 
-        void MCClient_OnNamedEntitySpawn(object sender, NamedEntitySpawnEventArgs e)
+        #region Methods
+        #region Event Handlers
+        void m_Client_OnNamedEntitySpawn(object sender, NamedEntitySpawnEventArgs e)
         {
             m_Players.Add(new MCPlayer(e.ID, e.Position, e.Name, e.Yaw, e.Pitch, e.Item));
         }
 
-        void MCClient_OnSpawnPosition(object sender, SpawnPositionEventArgs e)
+        void m_Client_OnSpawnPosition(object sender, SpawnPositionEventArgs e)
         {
             SpawnPoint = e.Position;
         }
 
-        void MCClient_OnPlayerInventory(object sender, PlayerInventoryEventArgs e)
+        void m_Client_OnPlayerInventory(object sender, PlayerInventoryEventArgs e)
         {
             switch (e.Inventory)
             {
@@ -199,7 +229,7 @@ namespace Org.Jonyleeson.MCBot
             }
         }
 
-        void MCClient_OnAddInventory(object sender, AddInventoryEventArgs e)
+        void m_Client_OnAddInventory(object sender, AddInventoryEventArgs e)
         {
             foreach (MCItem item in m_ItemInv)
             {
@@ -211,32 +241,35 @@ namespace Org.Jonyleeson.MCBot
                 }
             }
         }
-        #endregion
 
-        #region Methods
-        void MCClient_OnDisconnect(object sender, DisconnectEventArgs e)
+        void m_Client_OnPlayerMoveLook(object sender, PlayerMoveLookEventArgs e)
         {
-            m_Heartbeat.Abort();
+            m_Position = e.Position;
+            m_Yaw = e.Yaw;
+            m_Pitch = e.Pitch;
+
+            // Server wants us to echo this position, so we do just that
+            MoveLook(e.Position, e.Stance, e.Yaw, e.Pitch, e.Ground);
         }
 
-        void MCClient_OnUpdateTime(object sender, UpdateTimeEventArgs e)
+        void m_Client_OnUpdateTime(object sender, UpdateTimeEventArgs e)
         {
             this.Time = e.Time;
         }
 
-        void MCClient_OnLogin(object sender, LoginEventArgs e)
+        void m_Client_OnLogin(object sender, LoginEventArgs e)
         {
             m_Heartbeat = new Thread(new ThreadStart(delegate { HeartbeatThread(); }));
             m_Heartbeat.Start();
         }
 
-        void MCClient_OnHandshake(object sender, HandshakeEventArgs e)
+        void m_Client_OnHandshake(object sender, HandshakeEventArgs e)
         {
             if (e.Hash != "-") // some form of auth is required
             {
                 if (e.Hash == "+")
                 {
-                    Login(m_Username, m_ServerPassword);
+                    m_Client.Login(m_Username, m_ServerPassword);
                     return;
                 }
                 else
@@ -251,29 +284,27 @@ namespace Org.Jonyleeson.MCBot
                 }
             }
 
-            Login(m_Username, "Password");
+            m_Client.Login(m_Username, "Password");
         }
 
-        void MCClient_OnPlayerMoveLook(object sender, PlayerMoveLookEventArgs e)
+        void m_Client_OnDisconnect(object sender, DisconnectEventArgs e)
         {
-            m_Position = e.Position;
-
-            // Server wants us to echo this position, so we do just that
-            MoveLook(e.Position, e.Stance, e.Yaw, e.Pitch, e.Ground);
+            m_Heartbeat.Abort();
         }
+#endregion
 
         private void HeartbeatThread()
         {
             while (this.Connected)
             {
-                Heartbeat();
+                m_Client.Heartbeat();
                 Thread.Sleep(1000);
             }
         }
 
         public void Join()
         {
-            Handshake(m_Username);
+            m_Client.Handshake(m_Username);
         }
         #endregion
     }
