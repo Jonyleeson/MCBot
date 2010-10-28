@@ -93,6 +93,7 @@
     <Compile Include="MCBot\MCRawClient.cs" />
     <Compile Include="MCBot\MCSocket.cs" />
     <Compile Include="MCBot\MCVehicleType.cs" />
+    <Compile Include="MCBot\MCVehicle.cs" />
     <Compile Include="MCBot\NBT\INamedBinaryTag.cs" />
     <Compile Include="MCBot\NBT\NBTStructure.cs" />
     <Compile Include="MCBot\NBT\NBT_Byte.cs" />

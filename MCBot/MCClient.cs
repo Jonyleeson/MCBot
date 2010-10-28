@@ -25,8 +25,16 @@ namespace Org.Jonyleeson.MCBot
         private MCItem[] m_ItemInv;
         private Point3D m_Position;
         private List<MCPlayer> m_Players;
+        private List<MCVehicle> m_Vehicles;
         private float m_Yaw;
         private float m_Pitch;
+        #endregion
+
+        #region Events
+        public event PlayerMoveLookEventHandler PlayerPositionUpdate;
+        public event ChatEventHandler Chat;
+        public event NamedEntitySpawnEventHandler SpawnPlayer;
+        public event AddVehicleEventHandler SpawnVehicle;
         #endregion
 
         #region Properties
@@ -117,6 +125,13 @@ namespace Org.Jonyleeson.MCBot
                 return m_Players.ToArray(); 
             }
         }
+        public MCVehicle[] Vehicles
+        {
+            get
+            {
+                return m_Vehicles.ToArray();
+            }
+        }
         public float Yaw
         {
             get
@@ -161,7 +176,6 @@ namespace Org.Jonyleeson.MCBot
         { }
 
         public MCClient(string server, int port, string username, string password, string serverpassword, bool useauth)
-            : base(server, port)
         {
             m_Client = new MCRawClient(server, port);
 
@@ -198,6 +212,8 @@ namespace Org.Jonyleeson.MCBot
             m_Client.OnPlayerInventory += new PlayerInventoryEventHandler(m_Client_OnPlayerInventory);
             m_Client.OnSpawnPosition += new SpawnPositionEventHandler(m_Client_OnSpawnPosition);
             m_Client.OnNamedEntitySpawn += new NamedEntitySpawnEventHandler(m_Client_OnNamedEntitySpawn);
+            m_Client.OnChat += new ChatEventHandler(m_Client_OnChat);
+            m_Client.OnAddVehicle += new AddVehicleEventHandler(m_Client_OnAddVehicle);
         }
         #endregion
 
@@ -206,6 +222,9 @@ namespace Org.Jonyleeson.MCBot
         void m_Client_OnNamedEntitySpawn(object sender, NamedEntitySpawnEventArgs e)
         {
             m_Players.Add(new MCPlayer(e.ID, e.Position, e.Name, e.Yaw, e.Pitch, e.Item));
+
+            if (SpawnPlayer != null)
+                SpawnPlayer(this, e);
         }
 
         void m_Client_OnSpawnPosition(object sender, SpawnPositionEventArgs e)
@@ -249,7 +268,10 @@ namespace Org.Jonyleeson.MCBot
             m_Pitch = e.Pitch;
 
             // Server wants us to echo this position, so we do just that
-            MoveLook(e.Position, e.Stance, e.Yaw, e.Pitch, e.Ground);
+            m_Client.MoveLook(e.Position, e.Stance, e.Yaw, e.Pitch, e.Ground);
+
+            if (PlayerPositionUpdate != null)
+                PlayerPositionUpdate(this, e);
         }
 
         void m_Client_OnUpdateTime(object sender, UpdateTimeEventArgs e)
@@ -291,11 +313,25 @@ namespace Org.Jonyleeson.MCBot
         {
             m_Heartbeat.Abort();
         }
+
+        void m_Client_OnChat(object sender, ChatEventArgs e)
+        {
+            if (Chat != null)
+                Chat(this, e);
+        }
+
+        void m_Client_OnAddVehicle(object sender, AddVehicleEventArgs e)
+        {
+            m_Vehicles.Add(new MCVehicle(e.ID, e.Position, e.Type));
+
+            if (SpawnVehicle != null)
+                SpawnVehicle(this, e);
+        }
 #endregion
 
         private void HeartbeatThread()
         {
-            while (this.Connected)
+            while (m_Client.Connected)
             {
                 m_Client.Heartbeat();
                 Thread.Sleep(1000);
