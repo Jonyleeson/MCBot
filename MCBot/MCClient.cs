@@ -35,6 +35,7 @@ namespace Org.Jonyleeson.MCBot
         public event ChatEventHandler Chat;
         public event NamedEntitySpawnEventHandler SpawnPlayer;
         public event AddVehicleEventHandler SpawnVehicle;
+        public event LoginEventHandler LoggedIn;
         #endregion
 
         #region Properties
@@ -283,6 +284,9 @@ namespace Org.Jonyleeson.MCBot
         {
             m_Heartbeat = new Thread(new ThreadStart(delegate { HeartbeatThread(); }));
             m_Heartbeat.Start();
+
+            if (LoggedIn != null)
+                LoggedIn(this, e);
         }
 
         void m_Client_OnHandshake(object sender, HandshakeEventArgs e)
