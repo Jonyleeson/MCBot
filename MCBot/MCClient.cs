@@ -36,9 +36,18 @@ namespace Org.Jonyleeson.MCBot
         public event NamedEntitySpawnEventHandler SpawnPlayer;
         public event AddVehicleEventHandler SpawnVehicle;
         public event LoginEventHandler LoggedIn;
+        public event DisconnectEventHandler Disconnected;
         #endregion
 
         #region Properties
+        public bool Connected
+        {
+            get
+            {
+                return m_Client.Connected;
+            }
+        }
+
         public string Name
         {
             get
@@ -57,7 +66,7 @@ namespace Org.Jonyleeson.MCBot
             set
             {
                 m_SelectedItem = value;
-                ChangeHolding(m_SelectedItem);
+                m_Client.ChangeHolding(m_SelectedItem);
             }
         }
         public MCItem[] EquipInventory
@@ -72,7 +81,7 @@ namespace Org.Jonyleeson.MCBot
                     throw new Exception("Equipment Inventory must contain 4 items. Use MCBlockType.None for empty slots.");
 
                 m_EquipInv = value;
-                UpdateInventory(MCInventoryType.Equipment, m_EquipInv);
+                m_Client.UpdateInventory(MCInventoryType.Equipment, m_EquipInv);
             }
         }
         public MCItem[] CraftInventory
@@ -87,7 +96,7 @@ namespace Org.Jonyleeson.MCBot
                     throw new Exception("Crafting Inventory must contain 4 items. Use MCBlockType.None for empty slots.");
 
                 m_CraftInv = value;
-                UpdateInventory(MCInventoryType.Crafting, m_CraftInv);
+                m_Client.UpdateInventory(MCInventoryType.Crafting, m_CraftInv);
             }
         }
         public MCItem[] ItemInventory
@@ -102,7 +111,7 @@ namespace Org.Jonyleeson.MCBot
                     throw new Exception("Item Inventory must contain 36 items. Use MCBlockType.None for empty slots.");
 
                 m_ItemInv = value;
-                UpdateInventory(MCInventoryType.Items, m_ItemInv);
+                m_Client.UpdateInventory(MCInventoryType.Items, m_ItemInv);
             }
         }
         public Point3D Position
@@ -114,7 +123,7 @@ namespace Org.Jonyleeson.MCBot
             set
             {
                 m_Position = value;
-                Move(m_Position, m_Position.Y + 0.5, true);
+                m_Client.Move(m_Position, m_Position.Y + 0.5, true);
             }
         }
         public Point3D SpawnPoint
@@ -316,6 +325,9 @@ namespace Org.Jonyleeson.MCBot
         void m_Client_OnDisconnect(object sender, DisconnectEventArgs e)
         {
             m_Heartbeat.Abort();
+
+            if (Disconnected != null)
+                Disconnected(this, e);
         }
 
         void m_Client_OnChat(object sender, ChatEventArgs e)
@@ -342,8 +354,10 @@ namespace Org.Jonyleeson.MCBot
             }
         }
 
-        public void Join()
+        public void Login()
         {
+            m_Client.Connect();
+
             m_Client.Handshake(m_Username);
         }
         #endregion

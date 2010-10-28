@@ -37,7 +37,7 @@ namespace Org.Jonyleeson.MCBot
         { }
 
         public MCPlayer(int id, Point3D position, string name, float yaw, float pitch)
-            : base(id, position, name, yaw, pitch, MCBlockType.Air)
+            : this(id, position, name, yaw, pitch, MCBlockType.Air)
         { }
 
         public MCPlayer(int id, Point3D position, string name, float yaw, float pitch, MCBlockType item)
